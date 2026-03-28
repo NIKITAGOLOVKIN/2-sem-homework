@@ -8,7 +8,7 @@ int main(void)
         return 1;
     }
 
-   CSV(input);
+    CSV(input);
 
     fclose(input);
     return 0;
