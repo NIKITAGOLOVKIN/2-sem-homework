@@ -2,40 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/*Node* createAVLtree(char* filename)
-{
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("ошибка чтения файла\n");
-        return NULL;
-    }
-
-    Node* root = NULL;
-    int count = 0;
-    char buffer[1000];
-
-    while (fgets(buffer, sizeof(buffer), file)) {
-        char* temp = strchr(buffer, '\n');
-        if (temp == NULL)
-            continue;
-        *temp = '\0';
-        if (buffer[0] == '\0')
-            continue;
-
-        char* name = strchr(buffer, ':');
-        if (name == NULL)
-            continue;
-        *name = '\0';
-        root = insert(root, buffer, name + 1);
-        count++;
-    }
-
-    fclose(file);
-    printf("Загружено %d аэропортов. Система готова к работе.\n\n", count);
-
-    return root;
-}*/
-
 int main(int argc, char* argv[])
 {
     char* filename = argv[1];
@@ -85,7 +51,7 @@ int main(int argc, char* argv[])
         }
 
         else if (!strcmp(command, "delete")) {
-            root = delete(root, str);
+            root = deleteNode(root, str);
         }
 
         else if (!strcmp(command, "save")) {

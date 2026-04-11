@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
         secondScenarioAVL(&root, requests, newCodes, 10000);
         freeTree(root);
 
-        } else if (strcmp(argv[1], "list") == 0) {
+    } else if (strcmp(argv[1], "list") == 0) {
 
         ListNode* list = createList(filename);
 

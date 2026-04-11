@@ -48,7 +48,7 @@ int findSilent(Node* node, char* str);
 
 Node* add(Node* node, char* str);
 
-Node* delete(Node* node, char* str);
+Node* deleteNode(Node* node, char* str);
 
 void save(Node* node, char* filename);
 
