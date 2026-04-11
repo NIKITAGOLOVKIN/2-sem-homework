@@ -176,7 +176,7 @@ Node* add(Node* node, char* str)
     return node;
 }
 
-Node* delete(Node* node, char* str)
+Node* deleteNode(Node* node, char* str)
 {
     if (node == NULL) {
         return NULL;
