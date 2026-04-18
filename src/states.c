@@ -113,7 +113,7 @@ void siftDown(MinHeap* heap, int i)
         int leftChild = 2 * i + 1;
         int rightChild = 2 * i + 2;
         int smallest = leftChild;
-        
+
         if (rightChild < heap->size) {
             if (heap->data[rightChild].dist < heap->data[leftChild].dist) {
                 smallest = rightChild;
