@@ -69,7 +69,7 @@ int main(void)
 
                 Edge* edge = graph->graph[candidate.city];
                 for (edge; edge != NULL; edge = edge->next) {
-                    heapPush(heaps[currState], edge->to, edge->len);
+                    heapPush(heaps[i], edge->to, edge->len);
                 }
             }
         }
