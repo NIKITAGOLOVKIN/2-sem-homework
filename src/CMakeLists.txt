@@ -4,4 +4,5 @@ project(CSV)
 add_executable(CSV 
     main.c
     CSV.c
+    tests.c
 )
