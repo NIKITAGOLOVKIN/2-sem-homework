@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 bool containLineBreak(const char* str);
 
@@ -16,3 +17,5 @@ void printBody(char* str, int countOfColumn, int* maxWidth, FILE* output);
 int readFullString(FILE* file, char** buffer, int* capacity);
 
 int CSV(FILE* input, const char* nameOfOutputFile);
+
+void runTests(void);

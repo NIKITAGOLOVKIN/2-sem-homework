@@ -1,7 +1,6 @@
 #include "CSV.h"
 #include <ctype.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define FILLINGSPACE 1 /* Отступ: по 1 пробелу слева и справа от содержимого ячейки */
 
