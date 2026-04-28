@@ -3,8 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool isFullString(char* str)
+#define FILLINGSPACE 1 /* Отступ: по 1 пробелу слева и справа от содержимого ячейки */
+
+/* Проверка наличия переноса строки */
+bool containLineBreak(const char* str)
 {
+    if (!str) {
+        return false;
+    }
     for (char i = 0; str[i] != '\0'; i++) {
         if (str[i] == '\n') {
             return true;
@@ -13,10 +19,14 @@ bool isFullString(char* str)
     return false;
 }
 
+/* Проверка, является ли строка числом */
 bool isNumber(char* str)
 {
+    if (!str) {
+        return false;
+    }
     int i = 0;
-    int len = strlen(str);
+    const int len = strlen(str);
 
     if (str[i] == '-') {
         i++;
@@ -28,7 +38,7 @@ bool isNumber(char* str)
     bool hasDot = false;
 
     for (; i < len; i++) {
-        if (isdigit(str[i])) {
+        if (isdigit((unsigned char)str[i])) {
             hasDigit = true;
         } else if (str[i] == '.') {
             if (hasDot) {
@@ -42,173 +52,249 @@ bool isNumber(char* str)
     return hasDigit;
 }
 
+/* Отрисовка разделительной линии */
+void printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c)
+{
+    if (!output || !maxWidth) {
+        return;
+    }
+    fputc('+', output);
+    for (int i = 0; i < countOfColumn; i++) {
+        for (int j = 0; j < maxWidth[i] + 2 * FILLINGSPACE; j++) {
+            fputc(c, output);
+        }
+        fputc('+', output);
+    }
+    fputc('\n', output);
+}
+
+/* Вывод заголовка */
 void printHead(char* str, int countOfColumn, int* maxWidth, FILE* output)
 {
-    fputc('+', output);
-    char* token = NULL;
-    for (int i = 0; i < countOfColumn; i++) {
-        for (int j = 0; j < maxWidth[i] + 2; j++) {
-            fputc('=', output);
-        }
-        fputc('+', output);
+    if (!str || !maxWidth || !output) {
+        return;
     }
-    fputc('\n', output);
 
-    int countOfSpace;
-    token = strtok(str, ",");
+    printSeparation(output, countOfColumn, maxWidth, '=');
+
+    int len = strlen(str);
+    char* copy = malloc(len + 1);
+    if (!copy) {
+        return;
+    }
+    strcpy(copy, str);
+    char* token = copy;
+    char* next;
+    int countOfSpace = 0;
     int i = 0;
+
     while (token && i < countOfColumn) {
-        if (isNumber(token)) {
-            fputc('|', output);
-            countOfSpace = maxWidth[i] - strlen(token);
-            for (int j = 0; j < countOfSpace; ++j) {
-                fputc(' ', output);
-            }
-            fputc(' ', output);
-            fputs(token, output);
-            fputc(' ', output);
-        } else {
-            fputc('|', output);
-            fputc(' ', output);
-            fputs(token, output);
-            fputc(' ', output);
-            countOfSpace = maxWidth[i] - strlen(token);
-            for (int j = 0; j < countOfSpace; ++j) {
-                fputc(' ', output);
-            }
+        next = strchr(token, ',');
+        if (next) {
+            *next = '\0';
         }
+
+        fprintf(output, "| %-*s ", maxWidth[i], token);
+
         i++;
-        token = strtok(NULL, ",");
+        token = next ? next + 1 : NULL;
+    }
+
+    for (; i < countOfColumn; i++) {
+        fprintf(output, "| %-*s ", maxWidth[i], "");
     }
     fputc('|', output);
     fputc('\n', output);
+    free(copy);
 
-    fputc('+', output);
-    for (int i = 0; i < countOfColumn; i++) {
-        for (int j = 0; j < maxWidth[i] + 2; j++) {
-            fputc('=', output);
-        }
-        fputc('+', output);
-    }
-    fputc('\n', output);
+    printSeparation(output, countOfColumn, maxWidth, '=');
 }
 
+/* Вывод тела таблицы */
 void printBody(char* str, int countOfColumn, int* maxWidth, FILE* output)
 {
+    if (!str || !maxWidth || !output) {
+        return;
+    }
 
-    int countOfSpace;
-    char* token = strtok(str, ",");
+    int len = strlen(str);
+    char* copy = malloc(len + 1);
+    if (!copy) {
+        return;
+    }
+    strcpy(copy, str);
+    char* token = copy;
+    char* next;
+    int countOfSpace = 0;
     int i = 0;
+
     while (token && i < countOfColumn) {
-        if (isNumber(token)) {
-            fputc('|', output);
-            countOfSpace = maxWidth[i] - strlen(token);
-            for (int j = 0; j < countOfSpace; ++j) {
-                fputc(' ', output);
-            }
-            fputc(' ', output);
-            fputs(token, output);
-            fputc(' ', output);
-        } else {
-            fputc('|', output);
-            fputc(' ', output);
-            fputs(token, output);
-            fputc(' ', output);
-            countOfSpace = maxWidth[i] - strlen(token);
-            for (int j = 0; j < countOfSpace; ++j) {
-                fputc(' ', output);
-            }
+        next = strchr(token, ',');
+        if (next) {
+            *next = '\0';
         }
+
+        if (isNumber(token)) {
+            fprintf(output, "| %*s ", maxWidth[i], token);
+        } else {
+            fprintf(output, "| %-*s ", maxWidth[i], token);
+        }
+
         i++;
-        token = strtok(NULL, ",");
+        token = next ? next + 1 : NULL;
     }
     fputc('|', output);
     fputc('\n', output);
+    free(copy);
 
-    fputc('+', output);
-    for (int i = 0; i < countOfColumn; i++) {
-        for (int j = 0; j < maxWidth[i] + 2; j++) {
-            fputc('-', output);
-        }
-        fputc('+', output);
-    }
-    fputc('\n', output);
+    printSeparation(output, countOfColumn, maxWidth, '-');
 }
 
-FILE* CSV(FILE* input)
+int readFullString(FILE* file, char** buffer, int* capacity)
 {
-    /*-------------------------Из первой строки узнаем сколько у нас столбцов и плюсом считаем длины полей-----------------------------*/
-
-    int size = 5;
-    char* currStr = malloc(size);
-    fgets(currStr, size, input);
-    int totalRead = strlen(currStr);
-
-    while (!isFullString(currStr)) {
-        size *= 2;
-        currStr = realloc(currStr, size);
-        fgets(currStr + totalRead, size - totalRead, input);
-        totalRead += strlen(currStr + totalRead);
+    if (!file || !buffer || !capacity) {
+        return 0;
     }
-    currStr[strcspn(currStr, "\n")] = '\0';
 
-    size = 5;
-    int* maxWidth = calloc(size, sizeof(char));
+    if (*buffer == NULL) {
+        *capacity = 100;
+        *buffer = malloc(*capacity);
+        if (!*buffer) {
+            return 0;
+        }
+    }
+
+    int position = 0;
+    int c;
+    while ((c = fgetc(file)) != EOF && c != '\n') {
+        if (position + 1 >= *capacity) {
+            int newCapacity = *capacity * 2;
+            char* tmp = realloc(*buffer, newCapacity);
+            if (!tmp) {
+                return 0; /* При ошибке realloc исходный буфер остаётся валидным */
+            }
+            *buffer = tmp;
+            *capacity = newCapacity;
+        }
+        (*buffer)[position] = (char)c;
+        position++;
+    }
+    (*buffer)[position] = '\0';
+    return (position == 0 && c == EOF) ? 0 : 1;
+}
+
+int CSV(FILE* input, const char* nameOfOutputFile)
+{
+    if (!input || !nameOfOutputFile) {
+        return -1;
+    }
+
+    /* Из первой строки узнаем сколько у нас столбцов и длины полей */
+    char* currStr = NULL;
+    int bufferCapacity = 0;
+
+    if (readFullString(input, &currStr, &bufferCapacity) == 0 || !currStr) {
+        free(currStr);
+        return -1;
+    }
+
+    int currStrLen = strlen(currStr);
+    if (currStrLen > 0 && currStr[currStrLen - 1] == '\n') {
+        currStr[currStrLen - 1] = '\0';
+    }
+
+    int sizeArrOfWidth = 5;
+    int* maxWidth = calloc(sizeArrOfWidth, sizeof(int));
+    if (!maxWidth) {
+        printf("calloc failed");
+        free(currStr);
+        return -1;
+    }
+
     int countOfColumn = 0;
-    char* token = strtok(currStr, ",");
+    char* token = currStr;
+    char* next;
+
     while (token) {
-        if (size == countOfColumn) {
-            size *= 2;
-            maxWidth = realloc(maxWidth, size);
+        if (sizeArrOfWidth == countOfColumn) {
+            sizeArrOfWidth *= 2;
+            int* tmp = realloc(maxWidth, sizeArrOfWidth * sizeof(int));
+            if (!tmp) {
+                free(maxWidth);
+                free(currStr);
+                return -1;
+            }
+            maxWidth = tmp;
+
+            /* Обнуляем мусор в новых элементах */
+            for (int k = countOfColumn; k < sizeArrOfWidth; k++) {
+                maxWidth[k] = 0;
+            }
         }
-        maxWidth[countOfColumn] = ((maxWidth[countOfColumn]) > (strlen(token)) ? (maxWidth[countOfColumn]) : (strlen(token)));
+
+        next = strchr(token, ',');
+        if (next) {
+            *next = '\0';
+        }
+
+        int temp = strlen(token);
+        if (temp > maxWidth[countOfColumn]) {
+            maxWidth[countOfColumn] = temp;
+        }
+
         countOfColumn++;
-        token = strtok(NULL, ",");
+        token = next ? next + 1 : NULL;
     }
 
-    /*-----------------------------Считаем длины полей в остальных строках и оставляем максимальную-----------------------------------------*/
+    /* Считаем длины полей в остальных строках и оставляем максимальную */
 
-    size = 10;
-    currStr = realloc(currStr, size);
-    int i;
+    bufferCapacity = 10;
+    currStr = realloc(currStr, bufferCapacity);
+    if (!currStr) {
+        free(maxWidth);
+        return -1;
+    }
 
-    while (fgets(currStr, size, input)) {
-
-        totalRead = strlen(currStr);
-        while (!isFullString(currStr) && !feof(input)) {
-            size *= 2;
-            currStr = realloc(currStr, size);
-            fgets(currStr + totalRead, size - totalRead, input);
-            totalRead += strlen(currStr + totalRead);
+    while (readFullString(input, &currStr, &bufferCapacity)) {
+        int currStrLen = strlen(currStr);
+        if (currStrLen > 0 && currStr[currStrLen - 1] == '\n') {
+            currStr[currStrLen - 1] = '\0';
         }
-        currStr[strcspn(currStr, "\n")] = '\0';
 
-        token = strtok(currStr, ",");
-        i = 0;
-        while (token && (i < countOfColumn)) {
-            maxWidth[i] = ((maxWidth[i]) > (strlen(token)) ? (maxWidth[i]) : (strlen(token)));
+        token = currStr;
+        int i = 0;
+        while (token && i < countOfColumn) {
+            next = strchr(token, ',');
+            if (next) {
+                *next = '\0';
+            }
+
+            int temp = strlen(token);
+            if (temp > maxWidth[i]) {
+                maxWidth[i] = temp;
+            }
             i++;
-            token = strtok(NULL, ",");
+            token = next ? next + 1 : NULL;
         }
     }
 
-    /*------------------------------------------------проходимся еще раз по файлу для печати----------------------------------------------*/
+    /* проходимся еще раз по файлу для печати */
     rewind(input);
 
-    FILE* output = fopen("output.txt", "w");
+    FILE* output = fopen(nameOfOutputFile, "w");
+    if (!output) {
+        printf("Не удалось открыть файл для записи");
+        free(currStr);
+        free(maxWidth);
+        return -1;
+    }
 
-    currStr = realloc(currStr, size);
     bool firstString = true;
-    while (fgets(currStr, size, input)) {
-
-        totalRead = strlen(currStr);
-        while (!isFullString(currStr) && !feof(input)) {
-            size *= 2;
-            currStr = realloc(currStr, size);
-            fgets(currStr + totalRead, size - totalRead, input);
-            totalRead += strlen(currStr + totalRead);
+    while (readFullString(input, &currStr, &bufferCapacity)) {
+        int currStrLen = strlen(currStr);
+        if (currStrLen > 0 && currStr[currStrLen - 1] == '\n') {
+            currStr[currStrLen - 1] = '\0';
         }
-        currStr[strcspn(currStr, "\n")] = '\0';
 
         if (firstString) {
             printHead(currStr, countOfColumn, maxWidth, output);
@@ -219,7 +305,7 @@ FILE* CSV(FILE* input)
     }
 
     free(maxWidth);
-    free(token);
     free(currStr);
     fclose(output);
+    return 0;
 }
