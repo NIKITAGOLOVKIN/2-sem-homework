@@ -32,6 +32,7 @@ int main()
     char input[100];
     printf("Введите строку\n");
     printf(">> ");
+
     if (fgets(input, sizeof(input), stdin) != NULL) {
         char* temp = strchr(input, '\n');
         if (temp) {
@@ -40,17 +41,15 @@ int main()
     }
 
     int errCode = 0;
-    bool isNumber = dfa(n, &table, m, &finStates, start, &input, &errCode);
+    bool isNumber = checkStringForNumber(n, table, m, finStates, start, input, &errCode);
 
     if (isNumber) {
         printf("Это число!\n");
     } else {
         printf("Это не число :(\n");
         if (errCode == 1)
-            printf("Ошибка: символ не из алфавита ДКА.\n");
-        else if (errCode == 2)
             printf("Ошибка: нет перехода.\n");
-        else if (errCode == 3)
+        else if (errCode == 2)
             printf("Ошибка: число не завершено (нет цифры после точки/E).\n");
     }
 

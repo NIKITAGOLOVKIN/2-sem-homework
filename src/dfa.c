@@ -1,19 +1,13 @@
 #include "dfa.h"
+
 #include <ctype.h>
 
-bool dfa(int n, Transition* table, int m, int* finStates, int start, char* input, int* errCode)
+bool checkStringForNumber(int n, Transition* table, int m, int* finStates, int start, char* input, int* errCode)
 {
-
-    int currState = start;
+    int currentState = start;
 
     for (int i = 0; input[i] != '\0'; i++) {
         char c = input[i];
-
-        if (c != '.' && c != 'E' && c != '-' && c != '+' && !isdigit(c)) {
-            *errCode = 1;
-            return false;
-        }
-
         bool found = false;
 
         for (int j = 0; j < n; j++) {
@@ -26,25 +20,25 @@ bool dfa(int n, Transition* table, int m, int* finStates, int start, char* input
                 match = true;
             }
 
-            if (match && table[j].fromState == currState) {
+            if (match && table[j].fromState == currentState) {
                 found = true;
-                currState = table[j].toState;
+                currentState = table[j].toState;
                 break;
             }
         }
 
         if (!found) {
-            *errCode = 2;
+            *errCode = 1;
             return false;
         }
     }
 
     for (int i = 0; i < m; i++) {
-        if (currState == finStates[i]) {
+        if (currentState == finStates[i]) {
             return true;
         }
     }
 
-    *errCode = 3;
+    *errCode = 2;
     return false;
 }

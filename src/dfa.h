@@ -1,10 +1,16 @@
-#include <stdbool.h>
-#include <stdlib.h>
+#pragma once
 
+#include <stdbool.h>
+
+// Структура перехода для ДКА
 typedef struct Transition {
-    int fromState; /* Из какого состояния */
-    char symbol; /* Символ перехода ('d' - цифра, 's' - знак) */
-    int toState; /* В какое состояние */
+    // Из какого состояния
+    int fromState;
+    // Символ перехода ('d' - цифра, 's' - знак)
+    char symbol;
+    // В какое состояние
+    int toState;
 } Transition;
 
-bool dfa(int n, Transition* table, int m, int* finStates, int start, char* input, int* errCode);
+// Функция, симулирующая работу ДКА и проверяющая является ли строка числом
+bool checkStringForNumber(int n, Transition* table, int m, int* finStates, int start, char* input, int* errCode);
