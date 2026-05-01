@@ -23,7 +23,7 @@ bool isNumber(char* str)
         return false;
     }
     int i = 0;
-    const int len = strlen(str);
+    const size_t len = strlen(str);
 
     if (str[i] == '-') {
         i++;
@@ -49,7 +49,7 @@ bool isNumber(char* str)
     return hasDigit;
 }
 
-bool printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c)
+bool printSeparation(FILE* output, int countOfColumn, const int* maxWidth, char c)
 {
     if (!output || !maxWidth) {
         return false;
@@ -65,7 +65,7 @@ bool printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c)
     return true;
 }
 
-bool printHead(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
+bool printHead(char* csvLine, int countOfColumn, const int* maxWidth, FILE* output)
 {
     if (!csvLine || !maxWidth || !output) {
         return false;
@@ -75,13 +75,13 @@ bool printHead(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
         return false;
     }
 
-    int len = strlen(csvLine);
+    size_t len = strlen(csvLine);
     char* copy = malloc(len + 1);
     if (!copy) {
         free(copy);
         return false;
     }
-    strcpy(copy, csvLine);
+    memcpy(copy, csvLine, len + 1);
     char* token = copy;
     char* next;
     int countOfSpace = 0;
@@ -112,19 +112,19 @@ bool printHead(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
     return true;
 }
 
-bool printBody(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
+bool printBody(char* csvLine, int countOfColumn, const int* maxWidth, FILE* output)
 {
     if (!csvLine || !maxWidth || !output) {
         return false;
     }
 
-    int len = strlen(csvLine);
+    size_t len = strlen(csvLine);
     char* copy = malloc(len + 1);
     if (!copy) {
         free(copy);
         return false;
     }
-    strcpy(copy, csvLine);
+    memcpy(copy, csvLine, len + 1);
     char* token = copy;
     char* next;
     int countOfSpace = 0;
@@ -188,7 +188,7 @@ bool readFullString(FILE* file, char** buffer, int* capacity)
     return (position == 0 && c == EOF) ? false : true;
 }
 
-bool CSV(FILE* input, const char* nameOfOutputFile)
+bool csv(FILE* input, const char* nameOfOutputFile)
 {
     if (!input || !nameOfOutputFile) {
         return false;
@@ -203,7 +203,7 @@ bool CSV(FILE* input, const char* nameOfOutputFile)
         return false;
     }
 
-    int currStrLen = strlen(currStr);
+    size_t currStrLen = strlen(currStr);
     if (currStrLen > 0 && currStr[currStrLen - 1] == '\n') {
         currStr[currStrLen - 1] = '\0';
     }
@@ -242,7 +242,7 @@ bool CSV(FILE* input, const char* nameOfOutputFile)
             *next = '\0';
         }
 
-        int temp = strlen(token);
+        size_t temp = strlen(token);
         if (temp > maxWidth[countOfColumn]) {
             maxWidth[countOfColumn] = temp;
         }
@@ -254,14 +254,16 @@ bool CSV(FILE* input, const char* nameOfOutputFile)
     // Считаем длины полей в остальных строках и оставляем максимальную
 
     bufferCapacity = 10;
-    currStr = realloc(currStr, bufferCapacity);
-    if (!currStr) {
+    char* tmp = realloc(currStr, bufferCapacity);
+    if (!tmp) {
+        free(currStr);
         free(maxWidth);
         return false;
     }
+    currStr = tmp;
 
     while (readFullString(input, &currStr, &bufferCapacity)) {
-        int currStrLen = strlen(currStr);
+        size_t currStrLen = strlen(currStr);
         if (currStrLen > 0 && currStr[currStrLen - 1] == '\n') {
             currStr[currStrLen - 1] = '\0';
         }
@@ -274,7 +276,7 @@ bool CSV(FILE* input, const char* nameOfOutputFile)
                 *next = '\0';
             }
 
-            int temp = strlen(token);
+            size_t temp = strlen(token);
             if (temp > maxWidth[i]) {
                 maxWidth[i] = temp;
             }
@@ -296,7 +298,7 @@ bool CSV(FILE* input, const char* nameOfOutputFile)
 
     bool firstString = true;
     while (readFullString(input, &currStr, &bufferCapacity)) {
-        int currStrLen = strlen(currStr);
+        size_t currStrLen = strlen(currStr);
         if (currStrLen > 0 && currStr[currStrLen - 1] == '\n') {
             currStr[currStrLen - 1] = '\0';
         }

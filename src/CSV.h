@@ -11,16 +11,16 @@ bool containLineBreak(const char* str);
 bool isNumber(char* str);
 
 // Отрисовка разделительной линии
-bool printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c);
+bool printSeparation(FILE* output, int countOfColumn, const int* maxWidth, char c);
 
 // Вывод заголовка
-bool printHead(char* str, int countOfColumn, int* maxWidth, FILE* output);
+bool printHead(char* str, int countOfColumn, const int* maxWidth, FILE* output);
 
 // Вывод тела таблицы
-bool printBody(char* str, int countOfColumn, int* maxWidth, FILE* output);
+bool printBody(char* str, int countOfColumn, const int* maxWidth, FILE* output);
 
 bool readFullString(FILE* file, char** buffer, int* capacity);
 
-bool CSV(FILE* input, const char* nameOfOutputFile);
+bool csv(FILE* input, const char* nameOfOutputFile);
 
 void runTests(void);

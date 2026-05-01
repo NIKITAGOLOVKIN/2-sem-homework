@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (!CSV(input, nameOfOutputFile)) {
+    if (!csv(input, nameOfOutputFile)) {
         printf("Ошибка в работе CSV");
         fclose(input);
         return -1;

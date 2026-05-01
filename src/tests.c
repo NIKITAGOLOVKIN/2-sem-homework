@@ -25,7 +25,7 @@ int compareFileWithString(char filename[], char expected[])
     }
 
     char buffer[1000];
-    int len = fread(buffer, 1, sizeof(buffer) - 1, file);
+    size_t len = fread(buffer, 1, sizeof(buffer) - 1, file);
     buffer[len] = '\0';
     fclose(file);
 
@@ -97,7 +97,7 @@ void testBaseCSV(void)
         assert(inputFile != NULL);
     }
 
-    assert(CSV(inputFile, "test_output.txt") == true);
+    assert(csv(inputFile, "test_output.txt") == true);
     fclose(inputFile);
 
     compareFileWithString("test_output.txt", expected);
@@ -123,7 +123,7 @@ void testEmptyFields(void)
         assert(inputFile != NULL);
     }
 
-    assert(CSV(inputFile, "test_empty_out.txt") == true);
+    assert(csv(inputFile, "test_empty_out.txt") == true);
     fclose(inputFile);
 
     compareFileWithString("test_empty_out.txt", expected);
@@ -159,7 +159,7 @@ void testAlignment(void)
         assert(inputFile != NULL);
     }
 
-    assert(CSV(inputFile, "test_alignment_out.txt") == true);
+    assert(csv(inputFile, "test_alignment_out.txt") == true);
     fclose(inputFile);
 
     compareFileWithString("test_alignment_out.txt", expected);
