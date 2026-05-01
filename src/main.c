@@ -16,9 +16,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    int result = CSV(input, nameOfOutputFile);
-    if (result != 0) {
-        printf("Операция CSV завершилась с кодом %d\n", result);
+    if (!CSV(input, nameOfOutputFile)) {
+        printf("Ошибка в работе CSV");
         fclose(input);
         return -1;
     }

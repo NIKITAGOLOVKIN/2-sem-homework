@@ -72,7 +72,7 @@ void testContainLineBreak(void)
 
 void testBaseCSV(void)
 {
-    printf("--- Testing base CSV ---:\n");
+    printf("--- Testing base CSV ---\n");
 
     char input[] = "Test field 1,Test field 2\n"
                    "test,123\n"
@@ -92,18 +92,77 @@ void testBaseCSV(void)
     createTestCSV("test_input.csv", input);
 
     FILE* inputFile = fopen("test_input.csv", "r");
-    if (!input) {
+    if (!inputFile) {
         printf("Не удалось открыть файл\n");
         assert(inputFile != NULL);
     }
 
-    int result = CSV(inputFile, "test_output.txt");
-
-    assert(result == 0);
+    assert(CSV(inputFile, "test_output.txt") == true);
+    fclose(inputFile);
 
     compareFileWithString("test_output.txt", expected);
 
     printf("--- Test base CSV passed! ---\n");
+}
+
+void testEmptyFields(void) {
+    printf("--- Testing empty fields ---\n");
+    char input[] = "a,,c\n1,,3\n";
+    char expected[] = "+===+==+===+\n"
+                      "| a |  | c |\n"
+                      "+===+==+===+\n"
+                      "| 1 |  | 3 |\n"
+                      "+---+--+---+\n";
+
+    createTestCSV("test_empty.csv", input);
+
+    FILE* inputFile = fopen("test_empty.csv", "r");
+    if (!inputFile) {
+        printf("Не удалось открыть файл\n");
+        assert(inputFile != NULL);
+    }
+
+    assert(CSV(inputFile, "test_empty_out.txt") == true);
+    fclose(inputFile);
+
+    compareFileWithString("test_empty_out.txt", expected);
+
+    printf("--- Empty fields test passed! ---\n");
+}
+
+void testAlignment(void) {
+    printf("--- Testing alignment ---\n");
+    char input[] = "Text,Number\n"
+                    "Alice,1\n"
+                    "Bob,1000000\n"
+                    "Charlie,23.5\n"
+                    "Tom,-5\n";
+    char expected[] = "+=========+=========+\n"
+                      "| Text    | Number  |\n"
+                      "+=========+=========+\n"
+                      "| Alice   |       1 |\n"
+                      "+---------+---------+\n"
+                      "| Bob     | 1000000 |\n"
+                      "+---------+---------+\n"
+                      "| Charlie |    23.5 |\n"
+                      "+---------+---------+\n"
+                      "| Tom     |      -5 |\n"
+                      "+---------+---------+\n";
+
+    createTestCSV("test_alignment.csv", input);
+
+    FILE* inputFile = fopen("test_alignment.csv", "r");
+    if (!inputFile) {
+        printf("Не удалось открыть файл\n");
+        assert(inputFile != NULL);
+    }
+
+    assert(CSV(inputFile, "test_alignment_out.txt") == true);
+    fclose(inputFile);
+
+    compareFileWithString("test_alignment_out.txt", expected);
+
+    printf("--- Alignment test passed! ---\n");
 }
 
 void runTests(void)
@@ -113,6 +172,8 @@ void runTests(void)
     testIsNumber();
     testContainLineBreak();
     testBaseCSV();
+    testEmptyFields();
+    testAlignment();
 
     printf("--- ALL Tests passed! ---\n");
 }

@@ -4,7 +4,6 @@
 
 #define FILLINGSPACE 1 /* Отступ: по 1 пробелу слева и справа от содержимого ячейки */
 
-/* Проверка наличия переноса строки */
 bool containLineBreak(const char* str)
 {
     if (!str) {
@@ -18,7 +17,6 @@ bool containLineBreak(const char* str)
     return false;
 }
 
-/* Проверка, является ли строка числом */
 bool isNumber(char* str)
 {
     if (!str) {
@@ -51,11 +49,10 @@ bool isNumber(char* str)
     return hasDigit;
 }
 
-/* Отрисовка разделительной линии */
-void printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c)
+bool printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c)
 {
     if (!output || !maxWidth) {
-        return;
+        return false;
     }
     fputc('+', output);
     for (int i = 0; i < countOfColumn; i++) {
@@ -65,23 +62,26 @@ void printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c)
         fputc('+', output);
     }
     fputc('\n', output);
+    return true;
 }
 
-/* Вывод заголовка */
-void printHead(char* str, int countOfColumn, int* maxWidth, FILE* output)
+bool printHead(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
 {
-    if (!str || !maxWidth || !output) {
-        return;
+    if (!csvLine || !maxWidth || !output) {
+        return false;
     }
 
-    printSeparation(output, countOfColumn, maxWidth, '=');
+    if(!printSeparation(output, countOfColumn, maxWidth, '=')) {
+        return false;
+    }
 
-    int len = strlen(str);
+    int len = strlen(csvLine);
     char* copy = malloc(len + 1);
     if (!copy) {
-        return;
+        free(copy);
+        return false;
     }
-    strcpy(copy, str);
+    strcpy(copy, csvLine);
     char* token = copy;
     char* next;
     int countOfSpace = 0;
@@ -106,22 +106,25 @@ void printHead(char* str, int countOfColumn, int* maxWidth, FILE* output)
     fputc('\n', output);
     free(copy);
 
-    printSeparation(output, countOfColumn, maxWidth, '=');
+    if (!printSeparation(output, countOfColumn, maxWidth, '=')) {
+        return false;
+    }
+    return true;
 }
 
-/* Вывод тела таблицы */
-void printBody(char* str, int countOfColumn, int* maxWidth, FILE* output)
+bool printBody(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
 {
-    if (!str || !maxWidth || !output) {
-        return;
+    if (!csvLine || !maxWidth || !output) {
+        return false;
     }
 
-    int len = strlen(str);
+    int len = strlen(csvLine);
     char* copy = malloc(len + 1);
     if (!copy) {
-        return;
+        free(copy);
+        return false;
     }
-    strcpy(copy, str);
+    strcpy(copy, csvLine);
     char* token = copy;
     char* next;
     int countOfSpace = 0;
@@ -146,20 +149,23 @@ void printBody(char* str, int countOfColumn, int* maxWidth, FILE* output)
     fputc('\n', output);
     free(copy);
 
-    printSeparation(output, countOfColumn, maxWidth, '-');
+    if (!printSeparation(output, countOfColumn, maxWidth, '-')) {
+        return false;
+    }
+    return true;
 }
 
-int readFullString(FILE* file, char** buffer, int* capacity)
+bool readFullString(FILE* file, char** buffer, int* capacity)
 {
     if (!file || !buffer || !capacity) {
-        return 0;
+        return false;
     }
 
     if (*buffer == NULL) {
         *capacity = 100;
         *buffer = malloc(*capacity);
         if (!*buffer) {
-            return 0;
+            return false;
         }
     }
 
@@ -170,7 +176,7 @@ int readFullString(FILE* file, char** buffer, int* capacity)
             int newCapacity = *capacity * 2;
             char* tmp = realloc(*buffer, newCapacity);
             if (!tmp) {
-                return 0; /* При ошибке realloc исходный буфер остаётся валидным */
+                return false; /* При ошибке realloc исходный буфер остаётся валидным */
             }
             *buffer = tmp;
             *capacity = newCapacity;
@@ -179,22 +185,22 @@ int readFullString(FILE* file, char** buffer, int* capacity)
         position++;
     }
     (*buffer)[position] = '\0';
-    return (position == 0 && c == EOF) ? 0 : 1;
+    return (position == 0 && c == EOF) ? false : true;
 }
 
-int CSV(FILE* input, const char* nameOfOutputFile)
+bool CSV(FILE* input, const char* nameOfOutputFile)
 {
     if (!input || !nameOfOutputFile) {
-        return -1;
+        return false;
     }
 
-    /* Из первой строки узнаем сколько у нас столбцов и длины полей */
+    // Из первой строки узнаем сколько у нас столбцов и длины полей
     char* currStr = NULL;
     int bufferCapacity = 0;
 
-    if (readFullString(input, &currStr, &bufferCapacity) == 0 || !currStr) {
+    if (!readFullString(input, &currStr, &bufferCapacity) || !currStr) {
         free(currStr);
-        return -1;
+        return false;
     }
 
     int currStrLen = strlen(currStr);
@@ -207,7 +213,7 @@ int CSV(FILE* input, const char* nameOfOutputFile)
     if (!maxWidth) {
         printf("calloc failed");
         free(currStr);
-        return -1;
+        return false;
     }
 
     int countOfColumn = 0;
@@ -221,11 +227,11 @@ int CSV(FILE* input, const char* nameOfOutputFile)
             if (!tmp) {
                 free(maxWidth);
                 free(currStr);
-                return -1;
+                return false;
             }
             maxWidth = tmp;
 
-            /* Обнуляем мусор в новых элементах */
+            // Обнуляем мусор в новых элементах
             for (int k = countOfColumn; k < sizeArrOfWidth; k++) {
                 maxWidth[k] = 0;
             }
@@ -245,13 +251,13 @@ int CSV(FILE* input, const char* nameOfOutputFile)
         token = next ? next + 1 : NULL;
     }
 
-    /* Считаем длины полей в остальных строках и оставляем максимальную */
+    // Считаем длины полей в остальных строках и оставляем максимальную
 
     bufferCapacity = 10;
     currStr = realloc(currStr, bufferCapacity);
     if (!currStr) {
         free(maxWidth);
-        return -1;
+        return false;
     }
 
     while (readFullString(input, &currStr, &bufferCapacity)) {
@@ -277,7 +283,7 @@ int CSV(FILE* input, const char* nameOfOutputFile)
         }
     }
 
-    /* проходимся еще раз по файлу для печати */
+    // проходимся еще раз по файлу для печати
     rewind(input);
 
     FILE* output = fopen(nameOfOutputFile, "w");
@@ -285,7 +291,7 @@ int CSV(FILE* input, const char* nameOfOutputFile)
         printf("Не удалось открыть файл для записи");
         free(currStr);
         free(maxWidth);
-        return -1;
+        return false;
     }
 
     bool firstString = true;
@@ -296,15 +302,25 @@ int CSV(FILE* input, const char* nameOfOutputFile)
         }
 
         if (firstString) {
-            printHead(currStr, countOfColumn, maxWidth, output);
+            if (!printHead(currStr, countOfColumn, maxWidth, output)) {
+                free(maxWidth);
+                free(currStr);
+                fclose(output);
+                return false;
+            }
             firstString = false;
         } else {
-            printBody(currStr, countOfColumn, maxWidth, output);
+            if (!printBody(currStr, countOfColumn, maxWidth, output)) {
+                free(maxWidth);
+                free(currStr);
+                fclose(output);
+                return false;
+            }
         }
     }
 
     free(maxWidth);
     free(currStr);
     fclose(output);
-    return 0;
+    return true;
 }

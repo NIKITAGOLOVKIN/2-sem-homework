@@ -4,18 +4,23 @@
 #include <stdio.h>
 #include <string.h>
 
+// Проверка наличия переноса строки
 bool containLineBreak(const char* str);
 
+// Проверка, является ли строка числом
 bool isNumber(char* str);
 
-void printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c);
+// Отрисовка разделительной линии
+bool printSeparation(FILE* output, int countOfColumn, int* maxWidth, char c);
 
-void printHead(char* str, int countOfColumn, int* maxWidth, FILE* output);
+// Вывод заголовка
+bool printHead(char* str, int countOfColumn, int* maxWidth, FILE* output);
 
-void printBody(char* str, int countOfColumn, int* maxWidth, FILE* output);
+// Вывод тела таблицы
+bool printBody(char* str, int countOfColumn, int* maxWidth, FILE* output);
 
-int readFullString(FILE* file, char** buffer, int* capacity);
+bool readFullString(FILE* file, char** buffer, int* capacity);
 
-int CSV(FILE* input, const char* nameOfOutputFile);
+bool CSV(FILE* input, const char* nameOfOutputFile);
 
 void runTests(void);
