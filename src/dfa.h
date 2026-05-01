@@ -13,6 +13,6 @@ typedef struct Transition {
 } Transition;
 
 // Функция, симулирующая работу ДКА и проверяющая является ли строка числом
-bool checkStringForNumber(int n, Transition* table, int m, int* finStates, int start, char* input, int* errCode);
+bool checkStringForNumber(int n, Transition* table, int m, const int* finStates, int start, const char* input, int* errCode);
 
 void runTests(void);

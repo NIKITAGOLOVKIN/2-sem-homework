@@ -2,7 +2,7 @@
 
 #include <ctype.h>
 
-bool checkStringForNumber(int n, Transition* table, int m, int* finStates, int start, char* input, int* errCode)
+bool checkStringForNumber(int n, Transition* table, int m, const int* finStates, int start, const char* input, int* errCode)
 {
     int currentState = start;
 
@@ -12,11 +12,7 @@ bool checkStringForNumber(int n, Transition* table, int m, int* finStates, int s
 
         for (int j = 0; j < n; j++) {
             bool match = false;
-            if (table[j].symbol == c) {
-                match = true;
-            } else if (table[j].symbol == 'd' && isdigit(c)) {
-                match = true;
-            } else if (table[j].symbol == 's' && (c == '+' || c == '-')) {
+            if ((table[j].symbol == c) || (table[j].symbol == 'd' && isdigit(c)) || (table[j].symbol == 's' && (c == '+' || c == '-'))) {
                 match = true;
             }
 
