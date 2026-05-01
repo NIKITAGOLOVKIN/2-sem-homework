@@ -105,7 +105,8 @@ void testBaseCSV(void)
     printf("--- Test base CSV passed! ---\n");
 }
 
-void testEmptyFields(void) {
+void testEmptyFields(void)
+{
     printf("--- Testing empty fields ---\n");
     char input[] = "a,,c\n1,,3\n";
     char expected[] = "+===+==+===+\n"
@@ -130,13 +131,14 @@ void testEmptyFields(void) {
     printf("--- Empty fields test passed! ---\n");
 }
 
-void testAlignment(void) {
+void testAlignment(void)
+{
     printf("--- Testing alignment ---\n");
     char input[] = "Text,Number\n"
-                    "Alice,1\n"
-                    "Bob,1000000\n"
-                    "Charlie,23.5\n"
-                    "Tom,-5\n";
+                   "Alice,1\n"
+                   "Bob,1000000\n"
+                   "Charlie,23.5\n"
+                   "Tom,-5\n";
     char expected[] = "+=========+=========+\n"
                       "| Text    | Number  |\n"
                       "+=========+=========+\n"

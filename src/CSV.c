@@ -71,7 +71,7 @@ bool printHead(char* csvLine, int countOfColumn, int* maxWidth, FILE* output)
         return false;
     }
 
-    if(!printSeparation(output, countOfColumn, maxWidth, '=')) {
+    if (!printSeparation(output, countOfColumn, maxWidth, '=')) {
         return false;
     }
 
