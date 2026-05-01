@@ -3,8 +3,13 @@
 #include <stdio.h>
 #include <string.h>
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc > 1 && strcmp(argv[1], "--test") == 0) {
+        runTests();
+        return 0;
+    }
+
     int n = 16;
     Transition table[16];
 
