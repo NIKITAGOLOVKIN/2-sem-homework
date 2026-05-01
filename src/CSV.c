@@ -23,7 +23,7 @@ bool isNumber(char* str)
         return false;
     }
     int i = 0;
-    const size_t len = strlen(str);
+    size_t len = strlen(str);
 
     if (str[i] == '-') {
         i++;
@@ -244,7 +244,7 @@ bool csv(FILE* input, const char* nameOfOutputFile)
 
         size_t temp = strlen(token);
         if (temp > maxWidth[countOfColumn]) {
-            maxWidth[countOfColumn] = temp;
+            maxWidth[countOfColumn] = (int)temp;
         }
 
         countOfColumn++;
@@ -278,7 +278,7 @@ bool csv(FILE* input, const char* nameOfOutputFile)
 
             size_t temp = strlen(token);
             if (temp > maxWidth[i]) {
-                maxWidth[i] = temp;
+                maxWidth[i] = (int)temp;
             }
             i++;
             token = next ? next + 1 : NULL;
