@@ -78,7 +78,6 @@ bool printHead(char* csvLine, int countOfColumn, const int* maxWidth, FILE* outp
     size_t len = strlen(csvLine);
     char* copy = malloc(len + 1);
     if (!copy) {
-        free(copy);
         return false;
     }
     memcpy(copy, csvLine, len + 1);
@@ -118,7 +117,6 @@ bool printBody(char* csvLine, int countOfColumn, const int* maxWidth, FILE* outp
     size_t len = strlen(csvLine);
     char* copy = malloc(len + 1);
     if (!copy) {
-        free(copy);
         return false;
     }
     memcpy(copy, csvLine, len + 1);
@@ -185,51 +183,38 @@ bool readFullString(FILE* file, char** buffer, int* capacity)
     return (position == 0 && c == EOF) ? false : true;
 }
 
-bool csv(FILE* input, const char* nameOfOutputFile)
+bool parseFirstString(FILE* input, char** currentString, int* bufferCapacity, int* countOfColumn, int** maxWidth, int* maxWidthCapacity)
 {
-    if (!input || !nameOfOutputFile) {
+    if (!readFullString(input, currentString, bufferCapacity) || !(*currentString)) {
         return false;
     }
 
-    // Из первой строки узнаем сколько у нас столбцов и длины полей
-    char* currentString = NULL;
-    int bufferCapacity = 0;
-
-    if (!readFullString(input, &currentString, &bufferCapacity) || !currentString) {
-        free(currentString);
-        return false;
-    }
-
-    size_t currentStringLen = strlen(currentString);
-    if (currentStringLen > 0 && currentString[currentStringLen - 1] == '\n') {
-        currentString[currentStringLen - 1] = '\0';
+    size_t currentStringLen = strlen(*currentString);
+    if (currentStringLen > 0 && (*currentString)[currentStringLen - 1] == '\n') {
+        (*currentString)[currentStringLen - 1] = '\0';
     }
 
     int sizeArrOfWidth = 5;
-    int* maxWidth = calloc(sizeArrOfWidth, sizeof(int));
-    if (!maxWidth) {
-        printf("calloc failed");
-        free(currentString);
+    *maxWidth = calloc(sizeArrOfWidth, sizeof(int));
+    if (!*maxWidth) {
         return false;
     }
 
-    int countOfColumn = 0;
-    char* token = currentString;
+    char* token = *currentString;
 
     while (token) {
-        if (sizeArrOfWidth == countOfColumn) {
+        if (sizeArrOfWidth == *countOfColumn) {
             sizeArrOfWidth *= 2;
-            int* tmp = realloc(maxWidth, sizeArrOfWidth * sizeof(int));
+            int* tmp = realloc(*maxWidth, sizeArrOfWidth * sizeof(int));
             if (!tmp) {
-                free(maxWidth);
-                free(currentString);
+                free(*maxWidth);
                 return false;
             }
-            maxWidth = tmp;
+            *maxWidth = tmp;
 
             // Обнуляем мусор в новых элементах
-            for (int k = countOfColumn; k < sizeArrOfWidth; k++) {
-                maxWidth[k] = 0;
+            for (int i = *countOfColumn; i < sizeArrOfWidth; i++) {
+                (*maxWidth)[i] = 0;
             }
         }
 
@@ -239,32 +224,27 @@ bool csv(FILE* input, const char* nameOfOutputFile)
         }
 
         size_t temp = strlen(token);
-        if (temp > maxWidth[countOfColumn]) {
-            maxWidth[countOfColumn] = (int)temp;
+        if (temp > (*maxWidth)[*countOfColumn]) {
+            (*maxWidth)[*countOfColumn] = (int)temp;
         }
 
-        countOfColumn++;
+        (*countOfColumn)++;
         token = next ? next + 1 : NULL;
     }
 
-    // Считаем длины полей в остальных строках и оставляем максимальную
+    *maxWidthCapacity = sizeArrOfWidth;
+    return true;
+}
 
-    bufferCapacity = 10;
-    char* tmp = realloc(currentString, bufferCapacity);
-    if (!tmp) {
-        free(currentString);
-        free(maxWidth);
-        return false;
-    }
-    currentString = tmp;
-
-    while (readFullString(input, &currentString, &bufferCapacity)) {
-        size_t currentStringLen = strlen(currentString);
-        if (currentStringLen > 0 && currentString[currentStringLen - 1] == '\n') {
-            currentString[currentStringLen - 1] = '\0';
+bool calculateMaxWidth(FILE* input, char** currentString, int* bufferCapacity, int countOfColumn, int* maxWidth, int maxWidthCapacity)
+{
+    while (readFullString(input, currentString, bufferCapacity)) {
+        size_t currentStringLen = strlen(*currentString);
+        if (currentStringLen > 0 && (*currentString)[currentStringLen - 1] == '\n') {
+            (*currentString)[currentStringLen - 1] = '\0';
         }
 
-        token = currentString;
+        char* token = *currentString;
         int i = 0;
         while (token && i < countOfColumn) {
             char* next = strchr(token, ',');
@@ -273,52 +253,81 @@ bool csv(FILE* input, const char* nameOfOutputFile)
             }
 
             size_t temp = strlen(token);
-            if (temp > maxWidth[i]) {
+            if (temp > (size_t)maxWidth[i]) {
                 maxWidth[i] = (int)temp;
             }
             i++;
             token = next ? next + 1 : NULL;
         }
     }
+    return true;
+}
 
-    // проходимся еще раз по файлу для печати
+bool writeFormattedTable(FILE* input, char** currentString, int* bufferCapacity, int countOfColumn, int* maxWidth, const char* nameOfOutputFile)
+{
     rewind(input);
 
     FILE* output = fopen(nameOfOutputFile, "w");
     if (!output) {
         printf("Не удалось открыть файл для записи");
-        free(currentString);
-        free(maxWidth);
         return false;
     }
 
-    bool firstString = true;
-    while (readFullString(input, &currentString, &bufferCapacity)) {
-        size_t currentStringLen = strlen(currentString);
-        if (currentStringLen > 0 && currentString[currentStringLen - 1] == '\n') {
-            currentString[currentStringLen - 1] = '\0';
+    bool isFirstString = true;
+    while (readFullString(input, currentString, bufferCapacity)) {
+        size_t currentStringLen = strlen(*currentString);
+        if (currentStringLen > 0 && (*currentString)[currentStringLen - 1] == '\n') {
+            (*currentString)[currentStringLen - 1] = '\0';
         }
 
-        if (firstString) {
-            if (!printHead(currentString, countOfColumn, maxWidth, output)) {
-                free(maxWidth);
-                free(currentString);
+        if (isFirstString) {
+            if (!printHead(*currentString, countOfColumn, maxWidth, output)) {
                 fclose(output);
                 return false;
             }
-            firstString = false;
+            isFirstString = false;
         } else {
-            if (!printBody(currentString, countOfColumn, maxWidth, output)) {
-                free(maxWidth);
-                free(currentString);
+            if (!printBody(*currentString, countOfColumn, maxWidth, output)) {
                 fclose(output);
                 return false;
             }
         }
     }
+    fclose(output);
+    return true;
+}
+
+bool csv(FILE* input, const char* nameOfOutputFile)
+{
+    if (!input || !nameOfOutputFile) {
+        return false;
+    }
+
+    char* currentString = NULL;
+    int bufferCapacity = 0;
+    int countOfColumn = 0;
+    int* maxWidth = NULL;
+    int maxWidthCapacity = 0;
+    bool result = false;
+
+    // Из первой строки узнаем сколько у нас столбцов и длины полей
+    if (!parseFirstString(input, &currentString, &bufferCapacity, &countOfColumn, &maxWidth, &maxWidthCapacity)) {
+        free(maxWidth);
+        free(currentString);
+        return result;
+    }
+
+    // Считаем длины полей в остальных строках и оставляем максимальную
+    if (!calculateMaxWidth(input, &currentString, &bufferCapacity, countOfColumn, maxWidth, maxWidthCapacity)) {
+        free(maxWidth);
+        free(currentString);
+        return result;
+    }
+
+    // проходимся еще раз по файлу для печати
+    result = writeFormattedTable(input, &currentString, &bufferCapacity, countOfColumn, maxWidth, nameOfOutputFile);
 
     free(maxWidth);
     free(currentString);
-    fclose(output);
-    return true;
+    return result;
 }
