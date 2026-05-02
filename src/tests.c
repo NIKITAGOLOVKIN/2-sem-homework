@@ -1,3 +1,4 @@
+#include "tests.h"
 #include "CSV.h"
 #include <assert.h>
 

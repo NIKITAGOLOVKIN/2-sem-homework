@@ -19,8 +19,8 @@ bool printHead(char* str, int countOfColumn, const int* maxWidth, FILE* output);
 // Вывод тела таблицы
 bool printBody(char* str, int countOfColumn, const int* maxWidth, FILE* output);
 
+// Чтение строки до \n или EOF
 bool readFullString(FILE* file, char** buffer, int* capacity);
 
+// Обработка CSV файла и печать в текстовый файл
 bool csv(FILE* input, const char* nameOfOutputFile);
-
-void runTests(void);
