@@ -2,14 +2,14 @@
 #include "states.h"
 #include <stdlib.h>
 
-bool readInput(const char* filename, const int* countOfCities, const int* countOfRoads, Graph** graph, int** ownerOfCity, const int* countOfStates, int** capitals)
+bool readInput(const char* filename, int* countOfCities, int* countOfRoads, Graph** graph, int** ownerOfCity, int* countOfStates, int** capitals)
 {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         return false;
     }
 
-    fscanf(file, "%d %d", &(*countOfCities), &(*countOfRoads));
+    fscanf(file, "%d %d", countOfCities, countOfRoads);
 
     *ownerOfCity = calloc(*countOfCities, sizeof(int));
     if (*ownerOfCity == NULL) {
@@ -48,7 +48,6 @@ bool readInput(const char* filename, const int* countOfCities, const int* countO
 
 bool initializationOfCapitals(int* ownerOfCity, MinHeap** heaps, Graph* graph, const int* capitals, int countOfStates, int* captured)
 {
-    *captured = 0;
     for (int i = 0; i < countOfStates; i++) {
         int cap = capitals[i];
         ownerOfCity[cap] = i + 1;
@@ -111,14 +110,14 @@ void printResults(const int* ownerOfCity, int countOfCities, int countOfStates)
 
 int main(void)
 {
-    int countOfCities;
-    int countOfRoads;
-    int countOfStates;
+    int countOfCities = 0;
+    int countOfRoads = 0;
+    int countOfStates = 0;
     Graph* graph = NULL;
     int* ownerOfCity = NULL;
     int* capitals = NULL;
     MinHeap** heaps = NULL;
-    int captured;
+    int captured = 0;
 
     if (!readInput("input.txt", &countOfCities, &countOfRoads, &graph, &ownerOfCity, &countOfStates, &capitals)) {
         return 1;
