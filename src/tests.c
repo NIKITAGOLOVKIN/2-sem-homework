@@ -63,11 +63,11 @@ void testIsNumber(void)
 void testContainLineBreak(void)
 {
     printf("--- Testing containLineBreak ---\n");
-    assert(containLineBreak(NULL) == false);
-    assert(containLineBreak("") == false);
-    assert(containLineBreak("hello\nworld") == true);
-    assert(containLineBreak("end\n") == true);
-    assert(containLineBreak("no break") == false);
+    assert(doesContainLineBreak(NULL) == false);
+    assert(doesContainLineBreak("") == false);
+    assert(doesContainLineBreak("hello\nworld") == true);
+    assert(doesContainLineBreak("end\n") == true);
+    assert(doesContainLineBreak("no break") == false);
     printf("--- Test containLineBreak passed! ---\n");
 }
 

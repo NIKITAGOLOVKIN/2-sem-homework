@@ -5,7 +5,7 @@
 #include <string.h>
 
 // Проверка наличия переноса строки
-bool containLineBreak(const char* str);
+bool doesContainLineBreak(const char* str);
 
 // Проверка, является ли строка числом
 bool isNumber(char* str);
