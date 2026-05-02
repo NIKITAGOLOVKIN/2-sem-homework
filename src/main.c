@@ -1,5 +1,5 @@
-#include "states.h"
 #include "heap.h"
+#include "states.h"
 #include <stdlib.h>
 
 typedef struct Edge {
@@ -47,7 +47,7 @@ int main(void)
         free(ownerOfCity);
         return 1;
     }
-    if(!readEdge(file, graph, countOfRoads)) {
+    if (!readEdge(file, graph, countOfRoads)) {
         free(ownerOfCity);
         freeGraph(graph, countOfCities);
         fclose(file);
@@ -69,13 +69,13 @@ int main(void)
     }
     fclose(file);
 
-    MinHeap** heaps = malloc(countOfStates * sizeof(MinHeap*)); 
+    MinHeap** heaps = malloc(countOfStates * sizeof(MinHeap*));
     if (!heaps) {
         free(ownerOfCity);
         free(capitals);
         freeGraph(graph, countOfCities);
         return 1;
-    } 
+    }
 
     for (int i = 0; i < countOfStates; i++) {
         heaps[i] = initMinHeap();
