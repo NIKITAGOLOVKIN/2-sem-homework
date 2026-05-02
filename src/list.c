@@ -1,6 +1,13 @@
-#include "airports.h"
+#include "list.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+typedef struct ListNode {
+    char* code;
+    char* name;
+    struct ListNode* next;
+} ListNode;
 
 ListNode* createList(char* filename)
 {

@@ -1,6 +1,15 @@
-#include "airports.h"
+#include "AVLtree.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+typedef struct Node {
+    struct Node* leftChild;
+    struct Node* rightChild;
+    int balance;
+    char* code;
+    char* name;
+} Node;
 
 int getHeight(Node* node)
 {
@@ -93,7 +102,7 @@ Node* balance(Node* node)
     return node;
 }
 
-void inorderPrint(Node* node)
+/*void inorderPrint(Node* node)
 {
     if (node == NULL)
         return;
@@ -101,18 +110,23 @@ void inorderPrint(Node* node)
     inorderPrint(node->leftChild);
     printf("%s\n", node->code);
     inorderPrint(node->rightChild);
+}*/
+
+Node* createNode(char* code, char* name)
+{
+    Node* newNode = calloc(1, sizeof(Node));
+    newNode->code = malloc(strlen(code) + 1);
+    strcpy(newNode->code, code);
+    newNode->name = malloc(strlen(name) + 1);
+    strcpy(newNode->name, name);
+    newNode->balance = 0;
+    return newNode;
 }
 
 Node* insert(Node* node, char* code, char* name)
 {
     if (node == NULL) {
-        Node* newNode = calloc(1, sizeof(Node));
-        newNode->code = malloc(strlen(code) + 1);
-        strcpy(newNode->code, code);
-        newNode->name = malloc(strlen(name) + 1);
-        strcpy(newNode->name, name);
-        newNode->balance = 0;
-        return newNode;
+        return createNode(code, name);
     }
     if (strcmp(code, node->code) < 0) {
         node->leftChild = insert(node->leftChild, code, name);
@@ -184,9 +198,9 @@ Node* deleteNode(Node* node, char* str)
 
     int temp = strcmp(str, node->code);
     if (temp < 0) {
-        node->leftChild = delete (node->leftChild, str);
+        node->leftChild = deleteNode(node->leftChild, str);
     } else if (temp > 0) {
-        node->rightChild = delete (node->rightChild, str);
+        node->rightChild = deleteNode(node->rightChild, str);
     } else {
         if (!node->leftChild && !node->rightChild) {
             free(node->name);
@@ -221,7 +235,7 @@ Node* deleteNode(Node* node, char* str)
         node->name = malloc(strlen(successor->name) + 1);
         strcpy(node->name, successor->name);
 
-        node->rightChild = delete (node->rightChild, successor->code);
+        node->rightChild = deleteNode(node->rightChild, successor->code);
     }
 
     node->balance = getHeight(node->rightChild) - getHeight(node->leftChild);

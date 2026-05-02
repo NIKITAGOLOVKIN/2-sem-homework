@@ -1,7 +1,23 @@
-#include "airports.h"
+#include "AVLtree.h"
+#include "list.h"
+#include "scenario.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+typedef struct Node {
+    struct Node* leftChild;
+    struct Node* rightChild;
+    int balance;
+    char* code;
+    char* name;
+} Node;
+
+typedef struct ListNode {
+    char* code;
+    char* name;
+    struct ListNode* next;
+} ListNode;
 
 void collectCodes(Node* node, char** allCodes, int* count)
 {
