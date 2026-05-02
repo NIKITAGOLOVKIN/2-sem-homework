@@ -1,16 +1,6 @@
 #include "states.h"
 #include <stdlib.h>
 
-typedef struct Edge {
-    int to;
-    int len;
-    struct Edge* next;
-} Edge;
-
-typedef struct Graph {
-    Edge** graph;
-} Graph;
-
 Graph* initGraph(int n)
 {
     Graph* newGraph = malloc(sizeof(Graph));

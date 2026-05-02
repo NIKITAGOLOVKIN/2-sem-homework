@@ -4,10 +4,16 @@
 #include <stdio.h>
 
 // Структура ребра графа
-typedef struct Edge Edge;
+typedef struct Edge {
+    int to;
+    int len;
+    struct Edge* next;
+} Edge;
 
 // Структура графа
-typedef struct Graph Graph;
+typedef struct {
+    Edge** graph;
+} Graph;
 
 // Инициализация графа
 Graph* initGraph(int n);

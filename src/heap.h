@@ -1,25 +1,24 @@
 #pragma once
+#include <stdbool.h>
 
 // структура элемента кучи
-typedef struct HeapNode HeapNode;
+typedef struct {
+    int city;
+    int dist;
+} HeapNode;
 
 // структура кучи
-typedef struct MinHeap MinHeap;
+typedef struct {
+    HeapNode* data;
+    int size;
+    int capacity;
+} MinHeap;
 
 // Инициализация кучи
 MinHeap* initMinHeap(void);
 
-// Меняем местами два элемента кучи
-void swap(HeapNode* node1, HeapNode* node2);
-
-// Просеивание вверх
-void siftUp(MinHeap* heap, int i);
-
-// Просеивание вниз
-void siftDown(MinHeap* heap, int i);
-
 // Добавление нового элемента в кучу
-void heapPush(MinHeap* heap, int city, int dist);
+bool heapPush(MinHeap* heap, int city, int dist);
 
 // Взятие минимального элемента кучи
 void heapPop(MinHeap* heap, HeapNode* root);

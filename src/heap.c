@@ -1,17 +1,6 @@
 #include "heap.h"
 #include <stdlib.h>
 
-typedef struct HeapNode {
-    int city;
-    int dist;
-} HeapNode;
-
-typedef struct MinHeap {
-    HeapNode* data;
-    int size;
-    int capacity;
-} MinHeap;
-
 MinHeap* initMinHeap(void)
 {
     MinHeap* heap = malloc(sizeof(MinHeap));
@@ -80,11 +69,14 @@ void siftDown(MinHeap* heap, int i)
     }
 }
 
-void heapPush(MinHeap* heap, int city, int dist)
+bool heapPush(MinHeap* heap, int city, int dist)
 {
     if (heap->size >= heap->capacity) {
         int newCapacity = heap->capacity * 2;
         HeapNode* newNodes = realloc(heap->data, newCapacity * sizeof(HeapNode));
+        if (!newNodes) {
+            return false;
+        }
         heap->capacity = newCapacity;
         heap->data = newNodes;
     }
@@ -94,6 +86,8 @@ void heapPush(MinHeap* heap, int city, int dist)
 
     siftUp(heap, heap->size);
     heap->size++;
+
+    return true;
 }
 
 void heapPop(MinHeap* heap, HeapNode* root)
