@@ -1,4 +1,5 @@
 #include "CSV.h"
+#include "tests.h"
 #include <ctype.h>
 #include <stdlib.h>
 
