@@ -12,7 +12,7 @@ MinHeap* initMinHeap(void);
 // Меняем местами два элемента кучи
 void swap(HeapNode* node1, HeapNode* node2);
 
-// Просеивание вверх 
+// Просеивание вверх
 void siftUp(MinHeap* heap, int i);
 
 // Просеивание вниз
