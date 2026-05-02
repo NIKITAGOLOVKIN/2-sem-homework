@@ -2,7 +2,7 @@
 #include "states.h"
 #include <stdlib.h>
 
-bool readInput(const char* filename, int* countOfCities, int* countOfRoads, Graph** graph, int** ownerOfCity, int* countOfStates, int** capitals)
+bool readInput(const char* filename, const int* countOfCities, const int* countOfRoads, Graph** graph, int** ownerOfCity, const int* countOfStates, int** capitals)
 {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -46,7 +46,7 @@ bool readInput(const char* filename, int* countOfCities, int* countOfRoads, Grap
     return true;
 }
 
-bool initializationOfCapitals(int* ownerOfCity, MinHeap** heaps, Graph* graph, int* capitals, int countOfStates, int* captured)
+bool initializationOfCapitals(int* ownerOfCity, MinHeap** heaps, Graph* graph, const int* capitals, int countOfStates, int* captured)
 {
     *captured = 0;
     for (int i = 0; i < countOfStates; i++) {
@@ -95,7 +95,7 @@ void captureOfCities(int* ownerOfCity, MinHeap** heaps, Graph* graph, int countO
     }
 }
 
-void printResults(int* ownerOfCity, int countOfCities, int countOfStates)
+void printResults(const int* ownerOfCity, int countOfCities, int countOfStates)
 {
     printf("Результат распределения:\n");
     for (int i = 1; i <= countOfStates; i++) {
