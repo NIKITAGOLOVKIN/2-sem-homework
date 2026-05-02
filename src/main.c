@@ -123,7 +123,7 @@ int main(void)
     if (!readInput("input.txt", &countOfCities, &countOfRoads, &graph, &ownerOfCity, &countOfStates, &capitals)) {
         return 1;
     }
-    
+
     heaps = calloc(countOfStates, sizeof(MinHeap*));
     if (!heaps) {
         free(ownerOfCity);
