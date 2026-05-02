@@ -69,7 +69,7 @@ int main(void)
     }
     fclose(file);
 
-    MinHeap** heaps = malloc(countOfStates * sizeof(MinHeap*));
+    MinHeap** heaps = calloc(countOfStates, sizeof(MinHeap*));
     if (!heaps) {
         free(ownerOfCity);
         free(capitals);
@@ -99,7 +99,7 @@ int main(void)
         captured++;
 
         Edge* edge = graph->graph[cap]; // берем список городов куда можно попасть из столицы
-        for (edge; edge != NULL; edge = edge->next) {
+        for (; edge != NULL; edge = edge->next) {
             heapPush(heaps[i], edge->to, edge->len);
         }
     }
@@ -124,7 +124,7 @@ int main(void)
                 captured++;
 
                 Edge* edge = graph->graph[candidate.city];
-                for (edge; edge != NULL; edge = edge->next) {
+                for (; edge != NULL; edge = edge->next) {
                     heapPush(heaps[i], edge->to, edge->len);
                 }
             }
