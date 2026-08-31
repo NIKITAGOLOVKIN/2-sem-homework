@@ -1,15 +1,19 @@
 #pragma once
 
-typedef struct ListNode ListNode;
+typedef struct ListNode {
+    char* code;
+    char* name;
+    struct ListNode* next;
+} ListNode;
 
 // Создание списка
-ListNode* createList(char* filename);
+ListNode* createList(char* fileName);
 
 // Вставка в список
 ListNode* listInsert(ListNode* list, char* code, char* name);
 
 // Поиск в списке
-void listFind(ListNode* node, char* str);
+ListNode* listFind(ListNode* node, char* str);
 
 // Удаление элемента списка
 ListNode* listDelete(ListNode* list, char* code);

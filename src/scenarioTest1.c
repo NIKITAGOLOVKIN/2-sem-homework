@@ -1,23 +1,10 @@
 #include "AVLtree.h"
 #include "list.h"
 #include "scenario.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
-typedef struct Node {
-    struct Node* leftChild;
-    struct Node* rightChild;
-    int balance;
-    char* code;
-    char* name;
-} Node;
-
-typedef struct ListNode {
-    char* code;
-    char* name;
-    struct ListNode* next;
-} ListNode;
 
 void collectCodes(Node* node, char** allCodes, int* count)
 {
@@ -43,7 +30,7 @@ void firstScenarioAVL(Node* root, char** requests, int count)
 {
     int temp = 0;
     for (int i = 0; i < count; i++) {
-        if (findSilent(root, requests[i])) {
+        if (find(root, requests[i])) {
             temp++;
         }
     }
@@ -53,7 +40,7 @@ void firstScenarioList(ListNode* list, char** requests, int count)
 {
     int temp = 0;
     for (int i = 0; i < count; i++) {
-        if (listFindSilent(list, requests[i])) {
+        if (listFind(list, requests[i])) {
             temp++;
         }
     }
@@ -66,7 +53,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    char* filename = argv[2];
+    char* fileName = argv[2];
     char* allCodes[10000];
     int codesCount = 0;
     char* requests[50000];
@@ -74,7 +61,7 @@ int main(int argc, char* argv[])
 
     if (strcmp(argv[1], "avl") == 0) {
 
-        Node* root = createAVLtree(filename);
+        Node* root = createAVLtree(fileName);
         collectCodes(root, allCodes, &codesCount);
 
         for (int i = 0; i < 50000; i++) {
@@ -86,7 +73,7 @@ int main(int argc, char* argv[])
 
     } else if (strcmp(argv[1], "list") == 0) {
 
-        ListNode* list = createList(filename);
+        ListNode* list = createList(fileName);
         collectListCodes(list, allCodes, &codesCount);
 
         for (int i = 0; i < 50000; i++) {

@@ -1,12 +1,19 @@
 #include "AVLtree.h"
+#include "tests.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
 int main(int argc, char* argv[])
 {
-    char* filename = argv[1];
+    if ((argc > 1) && (strcmp(argv[1], "--test") == 0)) {
+        runTests();
+        return 0;
+    }
+    
+    char* fileName = argv[1];
 
-    Node* root = createAVLtree(filename);
+    Node* root = createAVLtree(fileName);
     if (root == NULL) {
         printf("Ошибка формирования дерева или пустой файл\n");
         return 1;
@@ -19,14 +26,18 @@ int main(int argc, char* argv[])
     char input[500];
     char command[10];
     char str[100];
-    while (1) {
+
+    while (true) {
         printf(">> ");
-        fgets(input, sizeof(input), stdin);
+        if(fgets(input, sizeof(input), stdin) == NULL) break;
+        
         char* temp = strchr(input, '\n');
-        *temp = '\0';
+        if(temp) *temp = '\0';
+
         if (input[0] == '\0') {
             continue;
         }
+
         sscanf(input, "%9s", command);
         char* args = strchr(input, ' ');
         if (args) {
@@ -39,7 +50,12 @@ int main(int argc, char* argv[])
         }
 
         if (!strcmp(command, "find")) {
-            find(root, str);
+            Node* found = find(root, str);
+            if (found) {
+                printf("%s -> %s.\n", found->code, found->name);
+            } else {
+                printf("Аэропорт с кодом '%s' не найден в базе.\n", str);
+            }
         }
 
         else if (!strcmp(command, "add")) {
@@ -55,7 +71,8 @@ int main(int argc, char* argv[])
         }
 
         else if (!strcmp(command, "save")) {
-            save(root, filename);
+            save(root, fileName);
+            printf("Состояние базы сохранено\n");
         }
 
         else if (!strcmp(command, "quit")) {
