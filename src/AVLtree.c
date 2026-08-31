@@ -3,29 +3,67 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Node {
-    struct Node* leftChild;
-    struct Node* rightChild;
-    int balance;
-    char* code;
-    char* name;
-} Node;
-
 int getHeight(Node* node)
 {
     if (node == NULL) {
         return 0;
     }
-    int heightLeft = getHeight(node->leftChild);
-    int heightRight = getHeight(node->rightChild);
-    return 1 + (heightLeft > heightRight ? heightLeft : heightRight);
+
+    return node->height;
 }
 
-Node* createAVLtree(char* filename)
+int max(int a, int b)
 {
-    FILE* file = fopen(filename, "r");
+    return a > b ? a : b;
+}
+
+void updateHeight(Node* node)
+{
+    if (node == NULL) {
+        return;
+    }
+
+    node->height = 1 + max(getHeight(node->leftChild), getHeight(node->rightChild));
+}
+
+int getBalance(Node* node)
+{
+    if (node == NULL) {
+        return 0;
+    }
+
+    return getHeight(node->rightChild) - getHeight(node->leftChild);
+}
+
+
+Node* createNode(char* code, char* name)
+{
+    Node* newNode = calloc(1, sizeof(Node));
+
+    newNode->code = malloc(strlen(code) + 1);
+    strcpy(newNode->code, code);
+
+    newNode->name = malloc(strlen(name) + 1);
+    strcpy(newNode->name, name);
+
+    newNode->height = 1;
+
+    return newNode;
+}
+
+void destroyNode(Node* node) {
+    if (node) {
+        free(node->code);
+        free(node->name);
+        free(node);
+    }
+}
+
+
+Node* createAVLtree(char* fileName)
+{
+    FILE* file = fopen(fileName, "r");
     if (file == NULL) {
-        printf("ошибка чтения файла\n");
         return NULL;
     }
 
@@ -58,8 +96,9 @@ Node* rotateLeft(Node* node)
     right->leftChild = node;
     node->rightChild = temp;
 
-    node->balance = getHeight(node->rightChild) - getHeight(node->leftChild);
-    right->balance = getHeight(right->rightChild) - getHeight(right->leftChild);
+    updateHeight(node);
+    updateHeight(right);
+
     return right;
 }
 
@@ -70,8 +109,9 @@ Node* rotateRight(Node* node)
     left->rightChild = node;
     node->leftChild = temp;
 
-    node->balance = getHeight(node->rightChild) - getHeight(node->leftChild);
-    left->balance = getHeight(left->rightChild) - getHeight(left->leftChild);
+    updateHeight(node);
+    updateHeight(left);
+
     return left;
 }
 
@@ -89,38 +129,25 @@ Node* bigRotateRight(Node* node)
 
 Node* balance(Node* node)
 {
-    if (node->balance == 2) {
-        if (node->rightChild->balance >= 0)
+    int balanceOfNode = getBalance(node);
+
+    if (balanceOfNode == 2) {
+        if (getBalance(node->rightChild) >= 0) {
             return rotateLeft(node);
+        }
+
         return bigRotateLeft(node);
     }
-    if (node->balance == -2) {
-        if (node->leftChild->balance <= 0)
+
+    if (balanceOfNode == -2) {
+        if (getBalance(node->leftChild) <= 0) {
             return rotateRight(node);
+        }
+
         return bigRotateRight(node);
     }
+
     return node;
-}
-
-/*void inorderPrint(Node* node)
-{
-    if (node == NULL)
-        return;
-
-    inorderPrint(node->leftChild);
-    printf("%s\n", node->code);
-    inorderPrint(node->rightChild);
-}*/
-
-Node* createNode(char* code, char* name)
-{
-    Node* newNode = calloc(1, sizeof(Node));
-    newNode->code = malloc(strlen(code) + 1);
-    strcpy(newNode->code, code);
-    newNode->name = malloc(strlen(name) + 1);
-    strcpy(newNode->name, name);
-    newNode->balance = 0;
-    return newNode;
 }
 
 Node* insert(Node* node, char* code, char* name)
@@ -128,13 +155,15 @@ Node* insert(Node* node, char* code, char* name)
     if (node == NULL) {
         return createNode(code, name);
     }
+
     if (strcmp(code, node->code) < 0) {
         node->leftChild = insert(node->leftChild, code, name);
     } else {
         node->rightChild = insert(node->rightChild, code, name);
     }
 
-    node->balance = getHeight(node->rightChild) - getHeight(node->leftChild);
+    updateHeight(node);
+
     return balance(node);
 }
 
@@ -144,18 +173,15 @@ void freeTree(Node* node)
         return;
     freeTree(node->leftChild);
     freeTree(node->rightChild);
-    free(node->code);
-    free(node->name);
-    free(node);
+    destroyNode(node);
 }
 
-void find(Node* node, char* str)
+Node* find(Node* node, char* str)
 {
     while (node) {
         int temp = strcmp(str, node->code);
         if (temp == 0) {
-            printf("%s -> %s.\n", node->code, node->name);
-            return;
+            return node;
         }
         if (temp < 0) {
             node = node->leftChild;
@@ -163,24 +189,9 @@ void find(Node* node, char* str)
             node = node->rightChild;
         }
     }
-    printf("Аэропорт с кодом '%s' не найден в базе.\n", str);
+    return NULL;
 }
 
-int findSilent(Node* node, char* str)
-{
-    while (node) {
-        int temp = strcmp(str, node->code);
-        if (temp == 0) {
-            return 1;
-        }
-        if (temp < 0) {
-            node = node->leftChild;
-        } else {
-            node = node->rightChild;
-        }
-    }
-    return 0;
-}
 
 Node* add(Node* node, char* str)
 {
@@ -197,33 +208,27 @@ Node* deleteNode(Node* node, char* str)
     }
 
     int temp = strcmp(str, node->code);
+
     if (temp < 0) {
         node->leftChild = deleteNode(node->leftChild, str);
     } else if (temp > 0) {
         node->rightChild = deleteNode(node->rightChild, str);
     } else {
-        if (!node->leftChild && !node->rightChild) {
-            free(node->name);
-            free(node->code);
-            free(node);
-            return NULL;
-        }
+
         if (node->leftChild == NULL) {
             Node* temp = node->rightChild;
-            free(node->name);
-            free(node->code);
-            free(node);
+            destroyNode(node);
             return temp;
         }
+
         if (node->rightChild == NULL) {
             Node* temp = node->leftChild;
-            free(node->name);
-            free(node->code);
-            free(node);
+            destroyNode(node);
             return temp;
         }
 
         Node* successor = node->rightChild;
+
         while (successor->leftChild) {
             successor = successor->leftChild;
         }
@@ -238,7 +243,8 @@ Node* deleteNode(Node* node, char* str)
         node->rightChild = deleteNode(node->rightChild, successor->code);
     }
 
-    node->balance = getHeight(node->rightChild) - getHeight(node->leftChild);
+    updateHeight(node);
+
     return balance(node);
 }
 
@@ -252,10 +258,10 @@ void printIntoFile(FILE* file, Node* node)
     printIntoFile(file, node->rightChild);
 }
 
-void save(Node* root, char* filename)
+void save(Node* root, char* fileName)
 {
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(fileName, "w");
+    if (file == NULL) return;
     printIntoFile(file, root);
     fclose(file);
-    printf("Состояние базы сохранено\n");
 }

@@ -1,9 +1,21 @@
 #pragma once
 
-typedef struct Node Node;
+typedef struct Node {
+    struct Node* leftChild;
+    struct Node* rightChild;
+    int height;
+    char* code;
+    char* name;
+} Node;
+
+// Создание узла дерева
+Node* createNode(char* code, char* name);
+
+// Освобождение узла дерева
+void destroyNode(Node* node);
 
 // Создание АВЛ дерева
-Node* createAVLtree(char* filename);
+Node* createAVLtree(char* fileName);
 
 // Вставка в АВЛ дерево при чтении из файла
 Node* insert(Node* node, char* code, char* name);
@@ -12,7 +24,7 @@ Node* insert(Node* node, char* code, char* name);
 void freeTree(Node* node);
 
 // Поиск в АВЛ дереве
-void find(Node* node, char* str);
+Node* find(Node* node, char* str);
 
 // Добавление в АВЛ дерево элемента в интерактивном формате
 Node* add(Node* node, char* str);
@@ -21,4 +33,4 @@ Node* add(Node* node, char* str);
 Node* deleteNode(Node* node, char* str);
 
 // Сохранение базы аэропортов в текстовый файл
-void save(Node* node, char* filename);
+void save(Node* node, char* fileName);
