@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
         runTests();
         return 0;
     }
-    
+
     char* fileName = argv[1];
 
     Node* root = createAVLtree(fileName);
@@ -29,10 +29,12 @@ int main(int argc, char* argv[])
 
     while (true) {
         printf(">> ");
-        if(fgets(input, sizeof(input), stdin) == NULL) break;
-        
+        if (fgets(input, sizeof(input), stdin) == NULL)
+            break;
+
         char* temp = strchr(input, '\n');
-        if(temp) *temp = '\0';
+        if (temp)
+            *temp = '\0';
 
         if (input[0] == '\0') {
             continue;

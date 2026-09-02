@@ -35,7 +35,6 @@ int getBalance(Node* node)
     return getHeight(node->rightChild) - getHeight(node->leftChild);
 }
 
-
 Node* createNode(char* code, char* name)
 {
     Node* newNode = calloc(1, sizeof(Node));
@@ -51,14 +50,14 @@ Node* createNode(char* code, char* name)
     return newNode;
 }
 
-void destroyNode(Node* node) {
+void destroyNode(Node* node)
+{
     if (node) {
         free(node->code);
         free(node->name);
         free(node);
     }
 }
-
 
 Node* createAVLtree(char* fileName)
 {
@@ -192,7 +191,6 @@ Node* find(Node* node, char* str)
     return NULL;
 }
 
-
 Node* add(Node* node, char* str)
 {
     char* name = strchr(str, ':');
@@ -261,7 +259,8 @@ void printIntoFile(FILE* file, Node* node)
 void save(Node* root, char* fileName)
 {
     FILE* file = fopen(fileName, "w");
-    if (file == NULL) return;
+    if (file == NULL)
+        return;
     printIntoFile(file, root);
     fclose(file);
 }

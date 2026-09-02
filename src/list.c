@@ -1,9 +1,10 @@
 #include "list.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-ListNode* createListNode(char* code, char* name) {
+ListNode* createListNode(char* code, char* name)
+{
     ListNode* newNode = calloc(1, sizeof(ListNode));
     newNode->code = strdup(code);
     newNode->name = strdup(name);
@@ -11,7 +12,8 @@ ListNode* createListNode(char* code, char* name) {
     return newNode;
 }
 
-static void deleteListNode(ListNode* node) {
+static void deleteListNode(ListNode* node)
+{
     if (node) {
         free(node->code);
         free(node->name);
