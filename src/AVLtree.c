@@ -39,11 +39,8 @@ Node* createNode(char* code, char* name)
 {
     Node* newNode = calloc(1, sizeof(Node));
 
-    newNode->code = malloc(strlen(code) + 1);
-    strcpy(newNode->code, code);
-
-    newNode->name = malloc(strlen(name) + 1);
-    strcpy(newNode->name, name);
+    newNode->code = strdup(code);
+    newNode->name = strdup(name);
 
     newNode->height = 1;
 
@@ -90,6 +87,8 @@ Node* createAVLtree(char* fileName)
 
 Node* rotateLeft(Node* node)
 {
+    if (node == NULL || node->rightChild == NULL)
+        return node;
     Node* right = node->rightChild;
     Node* temp = right->leftChild;
     right->leftChild = node;
@@ -103,6 +102,8 @@ Node* rotateLeft(Node* node)
 
 Node* rotateRight(Node* node)
 {
+    if (node == NULL || node->leftChild == NULL)
+        return node;
     Node* left = node->leftChild;
     Node* temp = left->rightChild;
     left->rightChild = node;
@@ -232,11 +233,9 @@ Node* deleteNode(Node* node, char* str)
         }
 
         free(node->code);
-        node->code = malloc(strlen(successor->code) + 1);
-        strcpy(node->code, successor->code);
+        node->code = strdup(successor->code);
         free(node->name);
-        node->name = malloc(strlen(successor->name) + 1);
-        strcpy(node->name, successor->name);
+        node->name = strdup(successor->name);
 
         node->rightChild = deleteNode(node->rightChild, successor->code);
     }

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define SIZE_OF_STR 100
+
 int main(int argc, char* argv[])
 {
     if ((argc > 1) && (strcmp(argv[1], "--test") == 0)) {
@@ -25,7 +27,7 @@ int main(int argc, char* argv[])
 
     char input[500];
     char command[10];
-    char str[100];
+    char str[SIZE_OF_STR];
 
     while (true) {
         printf(">> ");
@@ -45,8 +47,8 @@ int main(int argc, char* argv[])
         if (args) {
             while (*args == ' ')
                 args++;
-            strcpy(str, args);
-            str[sizeof(str) - 1] = '\0';
+            strncpy(str, args, SIZE_OF_STR - 1);
+            str[SIZE_OF_STR - 1] = '\0';
         } else {
             str[0] = '\0';
         }

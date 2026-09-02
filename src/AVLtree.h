@@ -33,4 +33,4 @@ Node* add(Node* node, char* str);
 Node* deleteNode(Node* node, char* str);
 
 // Сохранение базы аэропортов в текстовый файл
-void save(Node* node, char* fileName);
+void save(Node* root, char* fileName);
