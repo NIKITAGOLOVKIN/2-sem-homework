@@ -64,6 +64,12 @@ int main(int argc, char* argv[])
         Node* root = createAVLtree(fileName);
         collectCodes(root, allCodes, &codesCount);
 
+        if (codesCount == 0) {
+            printf("Error: Data structure is empty, no codes collected.\n");
+            freeTree(root);
+            return 1;
+        }
+
         for (int i = 0; i < 50000; i++) {
             requests[i] = allCodes[rand() % codesCount];
         }
@@ -75,6 +81,12 @@ int main(int argc, char* argv[])
 
         ListNode* list = createList(fileName);
         collectListCodes(list, allCodes, &codesCount);
+
+        if (codesCount == 0) {
+            printf("Error: Data structure is empty, no codes collected.\n");
+            freeList(list);
+            return 1;
+        }
 
         for (int i = 0; i < 50000; i++) {
             requests[i] = allCodes[rand() % codesCount];
